@@ -3,12 +3,16 @@ An example N2O Project
 
 Benchmarks
 ----------
+
 Here are some benchmark results.
-CPU    : Intel(R) Core(TM) i5 CPU       M 520  @ 2.40GHz
-RAM    : 3901 Мб (1458 Мб занято)
-OS     : Ubuntu 18.04.1 LTS
-GHC    : 8.4.3
-Erlang : 10
+
+| | Hardware characteristics |
+|-|-|
+| CPU    | Intel(R) Core(TM) i5 CPU M 520  @ 2.40GHz |
+| RAM    | 3901 Мб (1458 Мб занято)                  |
+| OS     | Ubuntu 18.04.1 LTS                        |
+| GHC    | 8.4.3                                     |
+| Erlang | 10                                        |  
 
 ### Haskell version
 ```bash
