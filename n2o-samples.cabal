@@ -26,9 +26,8 @@ executable n2o-sample
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
                 base >=4.7 && < 5
-              , n2o >= 0.11
-              , n2o-web >= 0.11
-              , n2o-nitro >= 0.11
+              , n2o
+              , n2o-nitro
               , cereal
               , bytestring
               , text
