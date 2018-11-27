@@ -38,12 +38,12 @@ packages:
 # using the same syntax as the packages field.
 # (e.g., acme-missiles-0.3)
 extra-deps:
-- ../nitro
-- ../n2o
-    #- git: git@github.com:o3/nitro.git
-    # commit: 6bb39cae72342b2fc17e1a1281c517e081e4bc03
-    #- git: git@github.com:o3/n2o.git
-    #  commit: d40cba8ef3fa2f62af31a31fa67b0b79df3b74d3
+    #- ../nitro
+    #- ../n2o
+- git: git@github.com:o3/nitro.git
+  commit: 6bb39cae72342b2fc17e1a1281c517e081e4bc03
+- git: git@github.com:o3/n2o.git
+  commit: d40cba8ef3fa2f62af31a31fa67b0b79df3b74d3
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
