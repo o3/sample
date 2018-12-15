@@ -1,4 +1,4 @@
-An example N2O Project
+The N2O project sample
 ======================
 
 Benchmarks
@@ -12,7 +12,7 @@ Here are some benchmark results.
 | RAM    | 3901 Мб (1458 Мб занято)                  |
 | OS     | Ubuntu 18.04.1 LTS                        |
 | GHC    | 8.4.3                                     |
-| Erlang | 10                                        |  
+| Erlang | 10                                        |
 
 ### Haskell version
 ```bash
