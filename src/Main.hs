@@ -38,4 +38,4 @@ index (Message (Publish x)) =
 index Terminate = do
   unsub "room"
 about Init = updateText "app" "This is the N2O Hello World App"
-about ev = liftIO $ putStrLn ("Unknown event " <> show ev)
+about Terminate = pure ()
