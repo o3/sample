@@ -6,6 +6,7 @@ import Network.N2O.Web hiding (Event)
 import GHC.Generics (Generic)
 import Data.Serialize (Serialize)
 import Data.Text.Encoding (decodeUtf8)
+import Control.Concurrent.STM (atomically, readTVar)
 
 data Example = Greet deriving (Show, Eq, Generic, Serialize)
 
@@ -24,6 +25,9 @@ router cx@Context{cxReq=Req{reqPath=path}} =
   in cx{cxHandler=mkHandler handle}
 
 index Init = do
+  cx <- getContext
+  sess <- atomically $ readTVar $ cxSessions cx
+  liftIO $ putStrLn $ show sess
   sub "room"
   update "send" [button{id_="send", body=[literal{text = "Send"}], postback=Just Greet, source=["name"]}]
 index (Message Greet) = do
