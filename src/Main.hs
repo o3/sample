@@ -29,10 +29,10 @@ index Init = do
   sub "room"
   update "send" [button{id_="send", body=[literal{text = "Send"}], postback=Just Send, source=["name"]}]
 index (Message Send) = do
-  Just x <- get "name" -- wf:q/1
+  Just x <- get "msg" -- wf:q/1
   pub "room" $ N2OClient $ Publish x
 index (Message (Publish x)) =
-  insertBottom "system" ([panel{body = [literal{text = decodeUtf8 x}]}] :: [Element Example])
+  insertBottom "hist" ([panel{body = [literal{text = decodeUtf8 x}]}] :: [Element Example])
 index Terminate = do
   unsub "room"
 about Init = updateText "app" "This is the N2O Hello World App"
