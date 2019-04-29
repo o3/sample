@@ -1,3 +1,4 @@
+
 // N2O CORE
 
 var active = false,
@@ -18,7 +19,7 @@ function co(name) { match = document.cookie.match(new RegExp(name + '=([^;]+)'))
 function N2O_start() {
     ws = new bullet(protocol + host + (port==""?"":":"+port) + "/ws" + querystring);
     ws.onmessage = function (evt) { // formatters loop
-        for (var i=0;i<protos.length;i++) { p = protos[i]; if (p.on(evt, p.do).status == "ok") return; } };
+    for (var i=0;i<protos.length;i++) { p = protos[i]; if (p.on(evt, p.do).status == "ok") return; } };
     ws.onopen = function() { if (!active) { ws.send('N2O,'+token()); console.log('WS Connect'); active=true; } };
     ws.onclose = function() { active = false; console.log('WS Disconnect'); }; next(); }
 
@@ -32,53 +33,34 @@ var $io = {}; $io.on = function onio(r, cb) {
         }
         try { eval(utf8_arr(r.v[1].v));
               if (typeof cb == 'function') cb(r);
-            } catch (e)  { console.log("Eval error: "+r);
-                           return { status: '' }; }
-        if (typeof btor == 'object' && btor) {
-//            btor.init();
-            if (typeof btor.is == 'function' && btor.is(r.v[2])) {
-                btor.decode(r.v[2]);
-                btor.clear();
-                btor.draw();
-            }
-        }
-        return { status: "ok" };
+              return { status: "ok" };
+        } catch (e)  { console.log("Eval error: "+r);
+                       return { status: '' }; }
     } else return { status: '' };
-};
+}
 
 var $file = {}; $file.on = function onfile(r, cb) {
-    if (is(r, 11, 'ftpack')) {
+    if (is(r, 10, 'ftpack')) {
         if (typeof cb == 'function') cb(r); return { status: "ok" };
     } else return { status: '' };
-};
+}
 
 // BERT Formatter
 
 var $bert = {}; $bert.protos = [$io, $file]; $bert.on = function onbert(evt, cb) {
-    if (Blob.prototype.isPrototypeOf(evt.data) &&
-        (evt.data.length > 0 || evt.data.size > 0)) {
-        var r = new FileReader();
-        r.addEventListener("loadend", function () {
-            try {
-                erlang = dec(r.result);
-                if (typeof cb == 'function') cb(erlang);
-                for (var i = 0; i < $bert.protos.length; i++) {
-                    p = $bert.protos[i];
-                    if (p.on(erlang, p.do).status == "ok") return;
-                }
-            } catch (e) { console.log(e); }
-        });
-        r.readAsArrayBuffer(evt.data);
+    if (ArrayBuffer.prototype.isPrototypeOf(evt.data) &&
+       (evt.data.byteLength > 0)) {
+        try {
+            var erlang = dec(evt.data);
+            if (typeof cb == 'function') cb(erlang);
+            for (var i = 0; i < $bert.protos.length; i++) {
+                var p = $bert.protos[i];
+                var ret = p.on(erlang, p.do);
+                if (ret.status == "ok") return ret;
+            }
+        } catch (e) { console.error(e); }
         return { status: "ok" };
     } else return { status: "error", desc: "data" };
-};
+}
 
 var protos = [$bert];
-
-function loader() {
-    var x=document.createElement('div');
-    x.setAttribute('id','loader');
-    x.innerHTML='<div class=\"lds-grid\"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
-    x.classList.add('loader');
-    document.body.append(x);
-}

@@ -19,7 +19,6 @@ var ftp = {
             offset: ftp.offset || 0,
             block: 1,
             total: file.size,
-            mime: file.type,
             file: file
         };
         ftp.queue.push(item);
@@ -27,7 +26,7 @@ var ftp = {
         return item.id;
     },
     start: function (id) {
-        if (ftp.active) { id && (ftp.item(id).autostart = true); return; }
+        if (ftp.active) { id && (ftp.item(id).autostart = true); return false; }
         var item = id ? ftp.item(id) : ftp.next();
         if (item) { ftp.active = true; ftp.send_slice(item); }
     },
@@ -48,8 +47,7 @@ var ftp = {
             number(item.offset),
             number(item.block || data.byteLength),
             bin(data),
-            bin(item.status || 'send'),
-            bin(item.mime)
+            bin(item.status || 'send')
         )));
     },
     send_slice: function (item) {
@@ -64,16 +62,15 @@ var ftp = {
         this.reader.readAsArrayBuffer(item.file.slice(item.offset, item.offset + item.block));
     },
     item: function (id) { return ftp.queue.find(function (item) { return item && item.id === id; }); },
-    next: function () { return ftp.queue.find(function (next) { return next && next.autostart; }); }
+    next: function () { return ftp.queue.find(function (next) { return next && next.autostart }); }
 };
 
 $file.do = function (rsp) {
-    var total = rsp.v[5].v, offset = rsp.v[6].v, block = rsp.v[7].v, status = utf8_arr(rsp.v[9].v);
-    var item;
+    var offset = rsp.v[6].v, block = rsp.v[7].v, status = utf8_arr(rsp.v[9].v);
     switch (status) {
         case 'init':
             if(block == 1) return;
-            item = ftp.item(utf8_arr(rsp.v[1].v)) || '0';
+            var item = ftp.item(utf8_arr(rsp.v[1].v)) || '0';
             item.offset = offset;
             item.block = block;
             item.name = utf8_arr(rsp.v[3].v);
@@ -81,26 +78,12 @@ $file.do = function (rsp) {
             if (item.autostart) ftp.start(item.id);
             break;
         case 'send':
-        var x = qi('ftp_status'); if (x) x.innerHTML = offset+'/'+total+' : '+(Math.round(100*offset/total));
-            progress = offset/total;
-            item = ftp.item(utf8_arr(rsp.v[1].v));
+            var x = qi('ftp_status'); if (x) x.innerHTML = offset;
+            var item = ftp.item(utf8_arr(rsp.v[1].v));
             item.offset = offset;
             item.block = block;
-            (block > 0 && ftp.active) ? ftp.send_slice(item) : ftp.stop(item.id);
+            (block > 0 && ftp.active) ? ftp.send_slice(item) : ftp.stop(item.id)
             break;
         case 'relay': debugger; if (typeof ftp.relay === 'function') ftp.relay(rsp); break;
     }
 };
-
-var progress = 0;
-var myCanvas = document.getElementById('progress_canvas');
-var circle = new ProgressCircle({
-    canvas: myCanvas,
-});
-circle.addEntry({
-    fillColor: '#20AA5E',
-    progressListener: function() {
-        return progress;
-    },
-});
-circle.start(100);
