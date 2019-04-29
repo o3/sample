@@ -25,7 +25,7 @@ router cx@Context{cxReq=Req{reqPath=path}} =
 
 index Init = do
   sub "room"
-  wire button{id_="send", postback=Just Greet, source=["name"]}
+  update "send" [button{id_="send", body=[literal{text = "Send"}], postback=Just Greet, source=["name"]}]
 index (Message Greet) = do
   Just x <- get "name" -- wf:q/1
   insertBottom "system" ([panel{body = [literal{text = decodeUtf8 x}]}] :: [Element Example])
