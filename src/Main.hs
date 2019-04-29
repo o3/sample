@@ -26,7 +26,7 @@ router cx@Context{cxReq=Req{reqPath=path}} =
 
 index Init = do
   cx <- getContext
-  sess <- atomically $ readTVar $ cxSessions cx
+  sess <- liftIO $ atomically $ readTVar $ cxSessions cx
   liftIO $ putStrLn $ show sess
   sub "room"
   update "send" [button{id_="send", body=[literal{text = "Send"}], postback=Just Greet, source=["name"]}]
