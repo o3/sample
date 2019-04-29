@@ -8,7 +8,6 @@ import Data.Serialize (Serialize)
 import Data.Text.Encoding (decodeUtf8)
 import Control.Concurrent.STM (atomically, readTVar)
 import qualified Data.ByteString as BS
---import qualified Data.Map.Strict as M
 
 data Example = Send | Publish BS.ByteString deriving (Show, Eq, Generic, Serialize)
 
@@ -27,7 +26,6 @@ router cx@Context{cxReq=Req{reqPath=path}} =
   in cx{cxHandler=mkHandler handle}
 
 index Init = do
-  cx <- getContext
   sub "room"
   update "send" [button{id_="send", body=[literal{text = "Send"}], postback=Just Send, source=["name"]}]
 index (Message Send) = do
