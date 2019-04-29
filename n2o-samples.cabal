@@ -33,4 +33,5 @@ executable n2o-sample
               , text
               , websockets
               , stm
+              , containers
   default-language: Haskell2010

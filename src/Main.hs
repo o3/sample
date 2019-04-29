@@ -7,8 +7,10 @@ import GHC.Generics (Generic)
 import Data.Serialize (Serialize)
 import Data.Text.Encoding (decodeUtf8)
 import Control.Concurrent.STM (atomically, readTVar)
+import qualified Data.ByteString as BS
+--import qualified Data.Map.Strict as M
 
-data Example = Greet deriving (Show, Eq, Generic, Serialize)
+data Example = Send | Publish BS.ByteString deriving (Show, Eq, Generic, Serialize)
 
 main = runServer "localhost" 3000 cx
 
@@ -26,13 +28,14 @@ router cx@Context{cxReq=Req{reqPath=path}} =
 
 index Init = do
   cx <- getContext
-  sess <- liftIO $ atomically $ readTVar $ cxSessions cx
-  liftIO $ putStrLn $ show sess
   sub "room"
-  update "send" [button{id_="send", body=[literal{text = "Send"}], postback=Just Greet, source=["name"]}]
-index (Message Greet) = do
+  update "send" [button{id_="send", body=[literal{text = "Send"}], postback=Just Send, source=["name"]}]
+index (Message Send) = do
   Just x <- get "name" -- wf:q/1
+  pub "room" $ N2OClient $ Publish x
+index (Message (Publish x)) =
   insertBottom "system" ([panel{body = [literal{text = decodeUtf8 x}]}] :: [Element Example])
-index Terminate = unsub "room"
+index Terminate = do
+  unsub "room"
 about Init = updateText "app" "This is the N2O Hello World App"
 about ev = liftIO $ putStrLn ("Unknown event " <> show ev)
