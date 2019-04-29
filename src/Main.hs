@@ -25,12 +25,10 @@ router cx@Context{cxReq=Req{reqPath=path}} =
 
 index Init = do
   sub "room"
-  --updateText "system" "What is your name?"
   wire button{id_="send", postback=Just Greet, source=["name"]}
 index (Message Greet) = do
   Just x <- get "name" -- wf:q/1
   insertBottom "system" ([panel{body = [literal{text = decodeUtf8 x}]}] :: [Element Example])
-  --updateText "system" ("Hello, " <> jsEscape x <> "!")
 index Terminate = unsub "room"
 about Init = updateText "app" "This is the N2O Hello World App"
 about ev = liftIO $ putStrLn ("Unknown event " <> show ev)
