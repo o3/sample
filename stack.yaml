@@ -2,7 +2,7 @@ resolver: lts-12.12
 packages:
 - .
 extra-deps:
-- git: git@github.com:o3/nitro.git
+- git: https://github.com/o3/nitro.git
   commit: master
-- git: git@github.com:o3/n2o.git
+- git: https://github.com/o3/n2o.git
   commit: master
